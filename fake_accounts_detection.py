@@ -5,6 +5,12 @@ Caltech_file=open('Caltech36', 'rb')
 F=pickle.load(Caltech_file)
 #F=Caltech
 
+
+
+
+###Construction of the detection algorithm
+
+#matrix of friend lists
 def friends(A):
     n=len(A)
     B=[[-1 for i in range(n)] for j in range(n)]
@@ -20,6 +26,7 @@ def friends(A):
 
 #s= friends(F)
 
+#degree of the node
 def degre (A,i):
     n=len(A)
     t=0
@@ -28,6 +35,7 @@ def degre (A,i):
         t=t+1
     return t
 
+#average node degree of the network
 def degremoyen(A):
         n=len(A)
         s=0
@@ -35,6 +43,7 @@ def degremoyen(A):
                 s+=degre(A,i)
         return float(s)/float(n)
                 
+#Computation of the permutations for each node list
 import random
 def tablederoutage (A,B):
     n=len(B[0])
@@ -48,7 +57,7 @@ def tablederoutage (A,B):
             t[i][j],t[i][k+j] = t[i][k+j],t[i][j]
     return t
 
-
+#associate each node to its permutation
 def tableroutage2 (A,B,C, node):
     d=degre(A,node)
     RT=[[0 for i in range(d)] for j in range(2)]
@@ -65,39 +74,40 @@ def search(B,row,friend):
     if i==n:
         i=0
     return i
-
+    
+#image of each node by these permutations at a certain step
 def next2(B, RT, friend):
     n=len(RT[0])
-    
     j=0
     while  j<n and B[friend][j]!=friend:        
         j=j+1
-        
     if j>n-1:
         return -1
     else:
         return (RT[friend])[j]
 
 
+
+
+
+###Construction of the random routes and cromparison
+
+#matrix in which every coefficient ai,j corresponds to the number of the final step of a route starting 
+#at the node node and going to the node j, after i permutations
 def witness(A,B,RT,node,w):
     n=degre(A,node)
     l=len(A)
-
     WT=[[0 for h in range(n)] for f in range(w)]
-
     for i in range(n):
         (WT[0])[i]=node
-                
     for i in range(n):
         (WT[1])[i]=(B[node])[i]
-                
     for i in range(2,w):
         for j in range(n):
             WT[i][j]=next2(B,RT,WT[i-1][j])
-
     return WT
 
-  
+#Comparison between two random routes 
 def comp (A,B,RT,V,S,W):
     cou=witness(A,B,RT,V,W)
     cou2=witness(A,B,RT,S,W)
@@ -115,16 +125,17 @@ def comp (A,B,RT,V,S,W):
         if c4>0:
             d=d+1
     return d
-#print comp(F,friends(F),tablederoutage(A,friends(F)),0,1,184)
-#print(comp(A,B,tablederoutage(A,B),0,1,184
-#a=time.clock()
-#print(comp(F,s,z,2,40,30))
-#b=time.clock()
-#print(a) 
-#print(b)
 
 
 
+
+
+###Defining a detection criterion
+
+
+###Construction of a random adjacency matrix to train the model
+
+#returns a vector v, which i_th coordinate is equal to the number of nodes that have a degree equal to i
 def statistique (A):
         n=len (A)
         v=[0 for s in range (0,n)]
@@ -133,44 +144,30 @@ def statistique (A):
                 print(100*float(i)/float(n))
         return v
 
-#import matplotlib.pyplot as plt
-#print statistique (F)
-
+#plot the graph
 #n=len(F)
 #t = arange(0.0,n, 1)
 #h=log(t)
-#y=statistique(F)
+y=statistique(F)
 #print y[1], y[n-1]
 
-#v=np.zeros(n)
-#for i in xrange(n):
-    #v[i]=y[i]
-#print v[1], v[n-1]    
-#q=log(v)   
-#plot(h,q)   
-#show()        
+v=np.zeros(n)
+for i in xrange(n):
+    v[i]=y[i]
+print v[1], v[n-1]    
+q=log(v)   
+plot(h,q)   
+show()        
         
-
-import random
-
-
-
-def bernoulli(p):
-        a=random.random()
-        if a<p:
-            return 1
-        else:
-            return 0
-
-#Creation de la matrice test
-
-
+#returns a vector which ith coordinate is equal to the sum of the images of the i first integers by f.
 def somme (f,n):
     c=0
     v=[0.0 for i in range(n)]
     for i in xrange(1,n):
         v[i]=f(i)+v[i-1]
     return v
+    
+#definition of the function modeling the number of nodes by degree
 def f(i):
     if i==0:
         c=0.0
@@ -179,6 +176,8 @@ def f(i):
     return c
 n=len(F)
 v=somme(f,n)
+
+#computes a random node degree, according to the probability distribution associated with the function f.
 def prob(v):
     n=len(v)
     c=n
@@ -191,6 +190,7 @@ def prob(v):
        
     return c
 
+#random adjacency matrix similar to the Caltech one (same size, similar “number of nodes of a given degree” profile)
 def matricerandom2(A,v):
     n=len(A)
     B=[[0 for x in range(n)]for w in range(n)]
@@ -207,9 +207,6 @@ def matricerandom2(A,v):
         for j in xrange(i):
             if j in g:
                 B[i][j]=1
-                
-        
-            
     for i in xrange(n):
         for j in xrange(i,n):
                               B[i][j]=B[j][i]
@@ -217,28 +214,32 @@ def matricerandom2(A,v):
                               
     return B
 
-#C=matricerandom2(F,v)
-#t = range(0.0,n, 1)
+#plot the graph of the new matrix
+C=matricerandom2(F,v)
+t = range(0.0,n, 1)
 #h=log(t)
-#y=statistique(C)
-
-
-#v=np.zeros(n)
-#for i in xrange(n):
-    #v[i]=y[i]
-
+y=statistique(C)
+v=np.zeros(n)
+for i in xrange(n):
+    v[i]=y[i]
+    t[i]=i
    
-#plot(t,v)   
-#show()
-#on va maintenant gÃ©nÃ©rer les noeuds sybils. On va supposer que les sybils Ã©tant entiÃ©rement connectÃ©s entre eux mais possÃ©dement peu de connections.De plus on suppose que le nombre de noeuds sybils est trÃ¨s petit devant le nombe total de noeud.
+plot(t,v)   
+show()
+
+
+
+
+
+###Generation of a random sybil attack
+
+#generation of an exponential probability distribution
 def k(v):
     d=random.random()
-
     s=(math.log(1-d)/v)
     return -s
 
-
-    
+#which nodes will link the two networks
 def generation( n,f):
      c=[[(i,j) for i  in range(f)]for j  in range(n)]
      
@@ -251,56 +252,43 @@ def generation( n,f):
             c[j][i],c[k+j][i] = c[k+j][i],c[j][i]
      return  c
 
+#linking the two networks (sybils+ new generated matrix)
 def ajoute(A):
     n=len(A)
     f=k(0.1)
     s=k(1)
-   
-
-    if f>=n : #arrive avec une probabilitÃ© extrÃªmement faible
+    if f>=n : #first probability is very low
         f=n-1
     if s>=n :
         s=n-1
-    f=int(f)+1 #on veut au moins un noeud sybil
+    f=int(f)+1 #at least one sybil node
     s=int(s)
-   
     G=generation(n,f)
-    
     V=[[0 for i in range(f)]for j in range(n)]
-   
     for i in xrange(f):
-        for j in xrange(s+1):#+1 car nous voulons absolument qu'il y aie au moins une connection
-            
+        for j in xrange(s+1):#+1 because we want at least one connection
             (a,b)=G[j][i]
             V[b][a]=1
-           
     for i in xrange(n):
         A[i]=A[i] +V[i]
-    
     for j in xrange(f):
         b=[0 for s in range(n+f)]
-        
-     
-        
         for g in xrange(n):
             if A[g][n+j]==1:
                 b[g]=1
-       
         for g in xrange(n+1,n+f):
             b[g]=1
-           
         A=A+ [b]
-        
     return A
 D=ajoute(C)
 
+#list of the different number of intersections between the routes of two nodes
 def listpour (A,v,s,m):
     B=[0 for i in range (m)]
     Q=friends(A)
     q=tablederoutage(A,Q)
     n=len(A)
     w=int(math.sqrt(n)*math.log(n))
-                                                       
     g=A
     h=A
     d=Q
@@ -308,52 +296,30 @@ def listpour (A,v,s,m):
     j=q
     l=q
     for s in xrange(m):
-        
         B[s]=comp(g,d,j,v,s,w)
         g=h
         d=c
         j=l
         
     return B
-m=50
-
-t = arange(0.0,m, 1)
-
-y=listpour(D,1,n-1,m)
-
-
-v=np.zeros(m)
-for i in xrange(m):
-    v[i]=y[i]
-
-plot(t,v)   
-show()
-def somme2 (V,m):
-    a=0
-    for i in xrange(m):
-        a=a+V[i]
-    return a
+    
+#empirical expectation of the previous function
 def estimation (A,v,s,m):
     V=listpour(A,v,s,m)
     s=somme2(V,m)
     return s/m
 
-
-        
-
+#Confusion matrix (number of honest/sybil nodes detected as honest/sybil
 def houbre(D,v,s,x):
-    
     f=friends(D)
     B=tablederoutage(D,f)
     n=769
-    
     k=len(D)
     print k
     w=int(math.sqrt(k)*math.log(k))
     J=[[0 for q in range(2)]for d in range(2)]
     xou=[comp(D,f,B,i,s,w) for i  in range(k-n)]
     xou2=[comp(D,f,B,i,s,w) for  i in range(n,k)]
-    
     print xou,xou2
     for i in xrange((k-n)):# on va pas tous les prendre car ça serait bien trop couteux en terme de complexité.mais comme c'est créer aléatoirement ce n'est pas grave 
         print float(i)*float(100)/float (2*(k-n))
@@ -375,6 +341,10 @@ def houbre(D,v,s,x):
 
 
 
+
+###Results
+
+#True if node is sybil (sybil detected as sybil), False if node is honest (honest detected as sybil
 def resul(A,v,s,ve):
     n=len(A)
     verite=False
