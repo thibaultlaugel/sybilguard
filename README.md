@@ -1,7 +1,7 @@
-Using the Sybilguard algorithm to detect fake accounts in a social network. Implemented in Python
+Using the Sybilguard algorithm to detect fake accounts in a social network
 =======================================================
 
-Social graphs and Random Walks
+Social graphs and Random Walks. Implemented in Python
 
 
 
