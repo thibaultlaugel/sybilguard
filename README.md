@@ -1,4 +1,4 @@
-Detection-of-Fake-Accounts-of-a-Social-Network--Python-
+Using the Sybilguard algorithm to detect fake accounts in a social network. Implemented in Python
 =======================================================
 
 Social graphs and Random Walks
