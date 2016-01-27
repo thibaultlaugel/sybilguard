@@ -6,7 +6,6 @@ Social graphs and Random Walks. Implemented in Python
 
 
 This project aims at proposing a method based on random walks, to automatically detect fake accounts that people might create in a social network. It is based on the algorithm SybilGuard, a novative method created to crack down on fake accounts creation. In this project, we try to use this algorithm to define a detection criterion for the fake accounts of the Caltech network.
-This project has been done in the Programming Course at ENSAE ParisTech in 2012, in collaboration with Morgane AUSTERN.
 
 - The first part of this project aims at explaining the mathematical concepts used in the algorithm: random walks, social graphs theory... 
 
@@ -28,4 +27,3 @@ Files:
 - fake_accounts_detection.py : Python script of the whole project
 - test_matrix.py : Python script for the generation of a random social matrix based on the Caltech matrix
 - Sybilguard.pdf : Article presenting the algorithm SybilGuard
-- Caltech36 : Caltech data
